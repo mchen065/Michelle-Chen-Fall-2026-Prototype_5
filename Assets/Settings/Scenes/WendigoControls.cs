@@ -1,61 +1,73 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
+using TMPro;
 
 public class WendigoControls : MonoBehaviour
 {
-    public LureManager lureManager;
+    public Transform human;
 
-    public Button northButton;
-    public Button eastButton;
-    public Button southButton;
-    public Button westButton;
+    public AudioSource northSound;
+    public AudioSource eastSound;
+    public AudioSource southSound;
+    public AudioSource westSound;
 
-    private int selectedSound = 0;
+    public TMP_Text selectedText;
 
-    void Start()
-    {
-        northButton.Select();
-    }
+    private int selected = 0;
 
     void Update()
     {
-
         if (Keyboard.current.upArrowKey.wasPressedThisFrame)
         {
-            selectedSound = 0;
-            northButton.Select();
+            selected = 0;
+            selectedText.text = "NORTH";
         }
-
 
         if (Keyboard.current.rightArrowKey.wasPressedThisFrame)
         {
-            selectedSound = 1;
-            eastButton.Select();
+            selected = 1;
+            selectedText.text = "EAST";
         }
-
 
         if (Keyboard.current.downArrowKey.wasPressedThisFrame)
         {
-            selectedSound = 2;
-            southButton.Select();
+            selected = 2;
+            selectedText.text = "SOUTH";
         }
-
 
         if (Keyboard.current.leftArrowKey.wasPressedThisFrame)
         {
-            selectedSound = 3;
-            westButton.Select();
+            selected = 3;
+            selectedText.text = "WEST";
         }
-
 
         if (Keyboard.current.enterKey.wasPressedThisFrame)
         {
-            lureManager.PlayLure(selectedSound);
+            PlaySound();
         }
     }
+
+    void PlaySound()
+    {
+        AudioSource sound = northSound;
+
+        if (selected == 1)
+            sound = eastSound;
+
+        if (selected == 2)
+            sound = southSound;
+
+        if (selected == 3)
+            sound = westSound;
+
+        float distance = Vector2.Distance(
+            human.position,
+            sound.transform.position
+        );
+
+        // Far away sounds louder like the legends
+        sound.volume = Mathf.Clamp01(distance / 15f);
+
+        sound.Play();
+    }
 }
-
-
-
-
